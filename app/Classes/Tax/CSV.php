@@ -14,12 +14,12 @@ class CSV
 	 *
 	 * @param UploadedFile $file
 	 *
-	 * @return array
+	 * @return Collection
 	 */
-	public static function getRows(UploadedFile $file): array
+	public static function getRows(UploadedFile $file): Collection
 	{
-		$items = Excel::toArray(new Collection(), $file);
+		$items = Excel::toCollection(new Collection(), $file);
 
-		return $items[0];
+		return $items->values()[0];
 	}
 }

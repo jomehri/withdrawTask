@@ -4,22 +4,29 @@ namespace App\Traits\Tax;
 
 use App\Classes\Tax\CSV;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 
 trait TaxTrait
 {
+	/**
+	 * @param UploadedFile $file
+	 *
+	 * @return Collection
+	 */
+	private function prepareRows(UploadedFile $file): Collection
+	{
+		return $this->prepareFile($file);
+	}
+
 	/**
 	 * Import file and initialize rows as array
 	 *
 	 * @param UploadedFile $file
 	 *
-	 * @return void
+	 * @return Collection
 	 */
-	private function importFile(UploadedFile $file): void
+	private function prepareFile(UploadedFile $file): Collection
 	{
-		/**
-		 * TODO: you can store physical file on storage if you needed (optional)
-		 */
-
-		$this->rows = CSV::getRows($file);
+		return CSV::getRows($file);
 	}
 }
