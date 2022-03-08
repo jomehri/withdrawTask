@@ -1,5 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Tax\TaxController;
 
-Route::get('/', [\App\Http\Controllers\Dashboard\TaxController::class, 'index']);
+/**
+ * Tax Calculation Routes
+ */
+Route::group(['prefix' => '/'], function() {
+
+	Route::get('/', [TaxController::class, 'item'])->name('tax.item');
+	Route::post('/store', [TaxController::class, 'store'])->name('tax.store');
+
+});
