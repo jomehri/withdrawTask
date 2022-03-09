@@ -17,13 +17,13 @@
 		<tbody>
 		@foreach($rows as $row)
 			<tr>
-				<td>{{ $row[0] }}</td>
-				<td>{{ $row[1] }}</td>
-				<td>{{ $row[2] }}</td>
-				<td>{{ $row[3] }}</td>
-				<td>{{ $row[4] }}</td>
-				<td>{{ $row[5] }}</td>
-				<td class = "bg-danger">// TODO</td>
+				<td>{{ $row['date'] }}</td>
+				<td>{{ $row['userId'] }}</td>
+				<td>{{ $row['type'] }}</td>
+				<td>{{ $row['action'] }}</td>
+				<td>{{ $row['amount'] }}</td>
+				<td>{{ $row['currency'] }}</td>
+				<td class = "bg-danger">{{ $row['tax'] }}</td>
 			</tr>
 		@endforeach        </tbody>
 	</table>
