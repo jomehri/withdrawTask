@@ -19,7 +19,7 @@ trait TaxTrait
 	 *
 	 * @return Collection
 	 */
-	private function prepareRows(UploadedFile $file): Collection
+	public function prepareRows(UploadedFile $file): Collection
 	{
 		$rows = $this->prepareFile($file);
 
@@ -33,7 +33,7 @@ trait TaxTrait
 	 *
 	 * @return Collection
 	 */
-	private function prepareFile(UploadedFile $file): Collection
+	public function prepareFile(UploadedFile $file): Collection
 	{
 		return CSV::getRows($file);
 	}

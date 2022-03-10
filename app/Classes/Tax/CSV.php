@@ -42,7 +42,7 @@ class CSV
 	 *
 	 * @return Collection
 	 */
-	private static function prepareKeyNames(Collection $items): Collection
+	public static function prepareKeyNames(Collection $items): Collection
 	{
 		$items->transform(function($item, $key) {
 
@@ -69,7 +69,7 @@ class CSV
 	 *
 	 * @return Collection
 	 */
-	private static function sortByDateAscending(Collection $items): Collection
+	public static function sortByDateAscending(Collection $items): Collection
 	{
 		return $items->sortBy('date');
 	}
