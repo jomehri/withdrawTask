@@ -17,4 +17,6 @@ WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_COUNT<br>
 ONLINE_CONVERSION_RATES<br>
 ONLINE_CONVERSION_URL<br>
 
-Note: On testing and to have exact results as the assignment question, keep ONLINE_CONVERSION_RATES Off, but if you want to test or have realtime results turn it On
+Note: On testing and to have exact results as the assignment question, keep ONLINE_CONVERSION_RATES Off (by default it's off in .env.testing), but if you want to test or 
+have realtime results edit main .env and set it to true
+turn it On
