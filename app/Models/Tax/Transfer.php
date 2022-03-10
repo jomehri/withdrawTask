@@ -74,7 +74,9 @@ abstract class Transfer
 			return ceil($amount);
 		}
 
-		return round($amount, $this->roundUpDecimalPlaces);
+		$decimalFactor = pow(10, $this->roundUpDecimalPlaces);
+
+		return ceil($amount * $decimalFactor) / $decimalFactor;
 	}
 
 	/**

@@ -69,7 +69,7 @@ trait TaxTrait
 		});
 
 		foreach($items as $item) {
-			dump($item['userId'] . ':' . $item['amount'] . ':' . $item['currency'] . '->' . $item['tax']);
+			dump($item['date'] . ':' . $item['userId'] . ':' . $item['amount'] . ':' . $item['currency'] . '->' . $item['tax']);
 		}
 		dd('$items');
 		return $items;

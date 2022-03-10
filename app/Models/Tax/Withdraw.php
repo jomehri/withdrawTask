@@ -17,7 +17,7 @@ class Withdraw extends Transfer
 	/**
 	 * Only this number of First payments are free in each week
 	 */
-	const NO_TAX_PRIVATE_WEEKLY_COUNT = 4;
+	const NO_TAX_PRIVATE_WEEKLY_COUNT = 3;
 
 	/**
 	 * Up to this amount of USD is no-tax
@@ -81,16 +81,19 @@ class Withdraw extends Transfer
 	 */
 	private function getTaxableAmount(): float
 	{
-		$previousDiscounts = 0;
-		$amount            = CurrencyRate::convertToEuro($this->item['amount'], $this->item['currency']);
-		$startOfWeek       = Carbon::parse($this->item['date'])->startOfWeek();
-		$endOfWeek         = Carbon::parse($this->item['date'])->endOfWeek();
+		// TODO remove this
+//		if($this->key != 5)
+//		{
+//			return 0;
+//		}
 
-		$this->items
-			->where("id", "<", $this->item['id'])
-			->where("userId", $this->item['userId'])
-			->where("action", Transfer::ACTION_WITHDRAW)
-			->whereBetween("date", [$startOfWeek, $endOfWeek])
+
+		$query = $this->_buildPreviousRecordsQuery();
+
+		$amount            = CurrencyRate::convertToEuro($this->item['amount'], $this->item['currency']);
+		$previousDiscounts = 0;
+
+		$query
 			->map(function($item, $key) use (&$previousDiscounts) {
 				/**
 				 * Default currency is EURO, do the processes in that currency
@@ -108,7 +111,17 @@ class Withdraw extends Transfer
 		/**
 		 * Now process current row's discount
 		 */
-		$amount = $amount - self::NO_TAX_PRIVATE_WEEKLY_AMOUNT + $previousDiscounts;
+		if($amount + $previousDiscounts < self::NO_TAX_PRIVATE_WEEKLY_AMOUNT)
+		{
+			/**
+			 * Amount doesn't reach discount limit?
+			 */
+			$amount = 0;
+		}
+		elseif($query->count() <= self::NO_TAX_PRIVATE_WEEKLY_COUNT)
+		{
+			$amount = $amount - self::NO_TAX_PRIVATE_WEEKLY_AMOUNT + $previousDiscounts;
+		}
 
 		/**
 		 * Always convert back to default currency which is EURO
@@ -130,5 +143,22 @@ class Withdraw extends Transfer
 		}
 
 		return $amount;
+	}
+
+	/**
+	 * @return Collection
+	 */
+	private function _buildPreviousRecordsQuery(): Collection
+	{
+		$startOfWeek = Carbon::parse($this->item['date'])->startOfWeek();
+		$endOfWeek   = Carbon::parse($this->item['date'])->endOfWeek();
+
+		$query = $this->items
+			->where("id", "<", $this->item['id'])
+			->where("userId", $this->item['userId'])
+			->where("action", Transfer::ACTION_WITHDRAW)
+			->whereBetween("date", [$startOfWeek, $endOfWeek]);
+
+		return $query;
 	}
 }
