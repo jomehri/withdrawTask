@@ -44,23 +44,19 @@ class CSV
 	 */
 	private static function prepareKeyNames(Collection $items): Collection
 	{
-		$items->transform(function($item) {
-
-			$carbonDate    = Carbon::parse($item[0]);
-			$weekOfTheYear = $carbonDate->year . '-' . $carbonDate->locale('en_US')->startOfWeek()->weekOfYear;
+		$items->transform(function($item, $key) {
 
 			return Collect(
 				[
-					'id'          => $item[0],
-					'date'          => $item[0],
-					'carbonDate'    => $carbonDate,
-					'weekOfTheYear' => $weekOfTheYear,
-					'userId'        => $item[1],
-					'type'          => $item[2],
-					'action'        => $item[3],
-					'amount'        => $item[4],
-					'currency'      => $item[5],
-					'tax'           => null,
+					'id'       => $key,
+					'date'     => $item[0],
+					'userId'   => $item[1],
+					'type'     => $item[2],
+					'action'   => $item[3],
+					'amount'   => $item[4],
+					'taxable'  => $item[4],
+					'currency' => $item[5],
+					'tax'      => null,
 				]
 			);
 		});

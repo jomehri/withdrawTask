@@ -46,6 +46,11 @@ trait TaxTrait
 	 */
 	private function calculateTaxes(Collection $items): Collection
 	{
+//		foreach($items as $item) {
+//			if (!$this->_isDeposit($item)) {
+//				dump($item['userId'] . ':' . $item['amount'] . ':' . $item['currency'] . '->' . $item['tax']);
+//			}
+//		}
 		$items->map(function(&$item, $key) use ($items) {
 
 			/**
@@ -63,6 +68,10 @@ trait TaxTrait
 			$item['tax'] = $transfer->calculateTax();
 		});
 
+		foreach($items as $item) {
+			dump($item['userId'] . ':' . $item['amount'] . ':' . $item['currency'] . '->' . $item['tax']);
+		}
+		dd('$items');
 		return $items;
 	}
 
