@@ -8,4 +8,8 @@ This assignment has been done by Ali Jomehri You can reach me at: ajomehri@gmail
 Note: Percentages and dynamic values such as weekly free of charge amount, Or deposit percentage, withdraw percentages and etc will be available to be edited through
 <b>.env</b> using these values:
 
-DEPOSIT_TAX_PERCENT WITHDRAW_BUSINESS_TAX_PERCENT WITHDRAW_PRIVATE_TAX_PERCENT WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_AMOUNT WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_COUNT
+DEPOSIT_TAX_PERCENT<br>
+WITHDRAW_BUSINESS_TAX_PERCENT<br>
+WITHDRAW_PRIVATE_TAX_PERCENT<br>
+WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_AMOUNT<br>
+WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_COUNT<br>
