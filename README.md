@@ -4,6 +4,7 @@ This assignment has been done by Ali Jomehri You can reach me at: ajomehri@gmail
 1- RUN: <b>"composer install"</b><br>
 2- RUN: <b>"php artisan serve"</b> and note the given url to view the project<br>
 3- open your browser and go to noted url<br>
+4- To RUN the unit test use this command: <b>"php artisan test --filter TaxTest"</b><br>
 
 Note: Percentages and dynamic values such as weekly free of charge amount, Or deposit percentage, withdraw percentages and etc will be available to be edited through
 <b>.env</b> using these values:
