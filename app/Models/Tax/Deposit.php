@@ -11,8 +11,9 @@ class Deposit extends Transfer
 	/**
 	 * @param int        $key
 	 * @param Collection $items
+	 * @param array      $rates
 	 */
-	public function __construct(int $key, Collection $items)
+	public function __construct(int $key, Collection $items, array $rates)
 	{
 		parent::__construct($key, $items);
 

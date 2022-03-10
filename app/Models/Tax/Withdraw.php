@@ -3,8 +3,8 @@
 namespace App\Models\Tax;
 
 use Carbon\Carbon;
-use App\Classes\Tax\CurrencyRate;
 use Illuminate\Support\Collection;
+use App\Classes\Tax\CurrencyConversion;
 
 class Withdraw extends Transfer
 {
@@ -14,20 +14,23 @@ class Withdraw extends Transfer
 	 * @var string
 	 */
 	private string $type;
-	private float  $businessTaxPercent;
+	private array  $rates;
 	private float  $privateTaxPercent;
-	private int    $withdrawWeeklyAmount;
+	private float  $businessTaxPercent;
 	private int    $withdrawWeeklyCount;
+	private int    $withdrawWeeklyAmount;
 
 	/**
 	 * @param int        $key
 	 * @param Collection $items
+	 * @param            $rates
 	 */
-	public function __construct(int $key, Collection $items)
+	public function __construct(int $key, Collection $items, $rates)
 	{
 		parent::__construct($key, $items);
 
 		$this->type                 = $this->item['type'];
+		$this->rates                = $rates;
 		$this->businessTaxPercent   = config('tax.WITHDRAW_BUSINESS_TAX_PERCENT');
 		$this->privateTaxPercent    = config('tax.WITHDRAW_PRIVATE_TAX_PERCENT');
 		$this->withdrawWeeklyAmount = config('tax.WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_AMOUNT');
@@ -73,16 +76,9 @@ class Withdraw extends Transfer
 	 */
 	private function getTaxableAmount(): float
 	{
-		// TODO remove this
-//		if($this->key != 5)
-//		{
-//			return 0;
-//		}
-
-
 		$query = $this->_buildPreviousRecordsQuery();
 
-		$amount            = CurrencyRate::convertToEuro($this->item['amount'], $this->item['currency']);
+		$amount            = CurrencyConversion::convertToEuro($this->item['amount'], $this->item['currency'], $this->rates);
 		$previousDiscounts = 0;
 
 		$query
@@ -90,7 +86,7 @@ class Withdraw extends Transfer
 				/**
 				 * Default currency is EURO, do the processes in that currency
 				 */
-				$amount = CurrencyRate::convertToEuro($item['amount'], $item['currency']);
+				$amount = CurrencyConversion::convertToEuro($item['amount'], $item['currency'], $this->rates);
 
 				$previousDiscounts += $amount;
 			});
@@ -118,7 +114,7 @@ class Withdraw extends Transfer
 		/**
 		 * Always convert back to default currency which is EURO
 		 */
-		return CurrencyRate::convertFromEuro($amount, $this->item['currency']);
+		return CurrencyConversion::convertFromEuro($amount, $this->item['currency'], $this->rates);
 	}
 
 	/**
@@ -131,7 +127,7 @@ class Withdraw extends Transfer
 
 		if($currency !== 'EUR')
 		{
-			$amount = CurrencyRate::convertToEuro($amount, $currency);
+			$amount = CurrencyConversion::convertToEuro($amount, $currency, $this->rates);
 		}
 
 		return $amount;

@@ -3,6 +3,7 @@
 namespace App\Traits\Tax;
 
 use App\Classes\Tax\CSV;
+use App\Classes\Tax\Rates;
 use App\Models\Tax\Deposit;
 use App\Models\Tax\Transfer;
 use App\Models\Tax\Withdraw;
@@ -46,32 +47,26 @@ trait TaxTrait
 	 */
 	private function calculateTaxes(Collection $items): Collection
 	{
-//		foreach($items as $item) {
-//			if (!$this->_isDeposit($item)) {
-//				dump($item['userId'] . ':' . $item['amount'] . ':' . $item['currency'] . '->' . $item['tax']);
-//			}
-//		}
-		$items->map(function(&$item, $key) use ($items) {
+		$ratesClass = new Rates();
+		$rates      = $ratesClass->rates;
+
+		$items->map(function(&$item, $key) use ($items, $rates) {
 
 			/**
 			 * Each action has its own class and its own formula: deposit, withdraw
 			 */
 			if($this->_isDeposit($item))
 			{
-				$transfer = new Deposit($key, $items);
+				$transfer = new Deposit($key, $items, $rates);
 			}
 			else
 			{
-				$transfer = new Withdraw($key, $items);
+				$transfer = new Withdraw($key, $items, $rates);
 			}
 
 			$item['tax'] = $transfer->calculateTax();
 		});
 
-		foreach($items as $item) {
-			dump($item['date'] . ':' . $item['userId'] . ':' . $item['amount'] . ':' . $item['currency'] . '->' . $item['tax']);
-		}
-		dd('$items');
 		return $items;
 	}
 

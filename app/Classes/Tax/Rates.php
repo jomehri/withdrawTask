@@ -2,49 +2,39 @@
 
 namespace App\Classes\Tax;
 
-class CurrencyRate
+class Rates
 {
-	/**
-	 * Convert other currencies back to EURO
-	 *
-	 * @param float  $amount
-	 * @param string $toCurrency
-	 *
-	 * @return float
-	 */
-	public static function convertFromEuro(float $amount, string $toCurrency): float
-	{
-		$rate = self::getEuroRates()[$toCurrency];
-
-		return $amount * $rate;
-	}
+	public array $rates;
 
 	/**
-	 * Convert other currencies back to EURO
 	 *
-	 * @param float  $amount
-	 * @param string $fromCurrency
-	 *
-	 * @return float
 	 */
-	public static function convertToEuro(float $amount, string $fromCurrency): float
+	public function __construct()
 	{
-		$rate = self::getEuroRates()[$fromCurrency];
-
-		return $amount / $rate;
+		$this->rates = $this->getRates();
 	}
+
 
 	/**
 	 * @return array
 	 */
-	private static function getEuroRates(): array
+	private function getRates(): array
 	{
 		/**
-		 * TODO this json can be read from this url in the future:
-		 * https://developers.paysera.com/tasks/api/currency-exchange-rates
+		 * Build it once only during runtime
 		 */
-		$rates = json_decode(
-			'{
+		if(isset($this->rates))
+		{
+			return $this->rates;
+		}
+
+		if(config('tax.ONLINE_CONVERSION_RATES'))
+		{
+			$content = file_get_contents(config('tax.ONLINE_CONVERSION_URL'));
+		}
+		else
+		{
+			$content = '{
 				   "base":"EUR",
 				   "date":"2022-03-09",
 				   "rates":{
@@ -215,10 +205,10 @@ class CurrencyRate
 				      "ZAR":18.00901,
 				      "ZMK":10162.625635,
 				      "ZMW":18.934429,
-				      "ZWL":363.547633}}'
-			,
-			true
-		);
+				      "ZWL":363.547633}}';
+		}
+
+		$rates = json_decode($content, true);
 
 		return $rates['rates'];
 	}

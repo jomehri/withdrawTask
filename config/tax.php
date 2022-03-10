@@ -14,4 +14,14 @@ return [
 	 * Only this number of payments are free in each week
 	 */
 	'WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_COUNT'  => env('WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_COUNT'),
+
+	/**
+	 * boolean, if true: fetches conversion rates online, else use offline conversion rates as given in assignment body
+	 */
+	'ONLINE_CONVERSION_RATES'                 => env('ONLINE_CONVERSION_RATES'),
+
+	/**
+	 * The URL of json live conversion rates
+	 */
+	'ONLINE_CONVERSION_URL'                   => env('ONLINE_CONVERSION_URL'),
 ];
