@@ -6,10 +6,7 @@ use Illuminate\Support\Collection;
 
 class Deposit extends Transfer
 {
-	/**
-	 * Tax Percent
-	 */
-	const TAX_PERCENT = 0.03;
+	private float $taxPercent;
 
 	/**
 	 * @param int        $key
@@ -18,6 +15,8 @@ class Deposit extends Transfer
 	public function __construct(int $key, Collection $items)
 	{
 		parent::__construct($key, $items);
+
+		$this->taxPercent = config('tax.DEPOSIT_TAX_PERCENT');
 	}
 
 	/**
@@ -25,7 +24,7 @@ class Deposit extends Transfer
 	 */
 	public function calculateTax(): float
 	{
-		$result = ($this->item['amount'] * self::TAX_PERCENT) / 100;
+		$result = $this->item['amount'] * $this->taxPercent;
 
 		return $this->roundUp($result);
 	}

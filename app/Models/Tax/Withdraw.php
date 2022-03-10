@@ -2,34 +2,22 @@
 
 namespace App\Models\Tax;
 
-use App\Classes\Tax\CurrencyRate;
 use Carbon\Carbon;
+use App\Classes\Tax\CurrencyRate;
 use Illuminate\Support\Collection;
 
 class Withdraw extends Transfer
 {
-	/**
-	 * Tax Percent
-	 */
-	const BUSINESS_TAX_PERCENT = 0.5;
-	const PRIVATE_TAX_PERCENT  = 0.3;
-
-	/**
-	 * Only this number of First payments are free in each week
-	 */
-	const NO_TAX_PRIVATE_WEEKLY_COUNT = 3;
-
-	/**
-	 * Up to this amount of USD is no-tax
-	 */
-	const NO_TAX_PRIVATE_WEEKLY_AMOUNT = 1000;
-
 	/**
 	 * Transfer type: business, private
 	 *
 	 * @var string
 	 */
 	private string $type;
+	private float  $businessTaxPercent;
+	private float  $privateTaxPercent;
+	private int    $withdrawWeeklyAmount;
+	private int    $withdrawWeeklyCount;
 
 	/**
 	 * @param int        $key
@@ -39,7 +27,11 @@ class Withdraw extends Transfer
 	{
 		parent::__construct($key, $items);
 
-		$this->type = $this->item['type'];
+		$this->type                 = $this->item['type'];
+		$this->businessTaxPercent   = config('tax.WITHDRAW_BUSINESS_TAX_PERCENT');
+		$this->privateTaxPercent    = config('tax.WITHDRAW_PRIVATE_TAX_PERCENT');
+		$this->withdrawWeeklyAmount = config('tax.WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_AMOUNT');
+		$this->withdrawWeeklyCount  = config('tax.WITHDRAW_TAX_FREE_PRIVATE_WEEKLY_COUNT');
 	}
 
 	/**
@@ -56,11 +48,11 @@ class Withdraw extends Transfer
 
 			$result = $this->getTaxableAmount();
 
-			$result = ($result * self::PRIVATE_TAX_PERCENT) / 100;
+			$result = $result * $this->privateTaxPercent;
 		}
 		else
 		{
-			$result = ($this->item['amount'] * self::BUSINESS_TAX_PERCENT) / 100;
+			$result = $this->item['amount'] * $this->businessTaxPercent;
 		}
 
 		return $this->roundUp($result);
@@ -106,21 +98,21 @@ class Withdraw extends Transfer
 		/**
 		 * Previous discounts couldn't exceed 1000 EURO
 		 */
-		$previousDiscounts = min($previousDiscounts, self::NO_TAX_PRIVATE_WEEKLY_AMOUNT);
+		$previousDiscounts = min($previousDiscounts, $this->withdrawWeeklyAmount);
 
 		/**
 		 * Now process current row's discount
 		 */
-		if($amount + $previousDiscounts < self::NO_TAX_PRIVATE_WEEKLY_AMOUNT)
+		if($amount + $previousDiscounts < $this->withdrawWeeklyAmount)
 		{
 			/**
 			 * Amount doesn't reach discount limit?
 			 */
 			$amount = 0;
 		}
-		elseif($query->count() <= self::NO_TAX_PRIVATE_WEEKLY_COUNT)
+		elseif($query->count() <= $this->withdrawWeeklyCount)
 		{
-			$amount = $amount - self::NO_TAX_PRIVATE_WEEKLY_AMOUNT + $previousDiscounts;
+			$amount = $amount - $this->withdrawWeeklyAmount + $previousDiscounts;
 		}
 
 		/**
